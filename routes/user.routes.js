@@ -1,8 +1,31 @@
-const express = require('express')
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
+const { body, validationResult } = require('express-validator');
 
-router.get('/test', (req, res) => {
-    res.render("index");
-})
 
-module.exports = router
+
+router.get("/register", (req, res) => {
+  res.render("register");
+});
+
+router.post("/register",
+  body('email').trim().isEmail().isLength({min: 10}),
+  body('username').trim().isLength({min: 3}),
+  body('password').trim().isLength({min: 5}),
+  (req, res) => {
+    // console.log(req.body)
+    
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(400).json({
+        error: error.array(),
+        message: 'Invalid data'
+      })
+    }
+
+    // console.log(error)
+
+    res.send(error)
+});
+
+module.exports = router;
